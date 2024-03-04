@@ -87,13 +87,10 @@ def shortest_path(graph,start,dest):
         print('Shortest distance: ' + str(costs[dest]))
         print('Path to distance: ' + str(trace))
 
+
+#!do not run multiple instances of the function/call function more than once or you will get an error!!!
 #starting value
 source = 'A'
+dest = 'H'
 
-#!function can only be called once for performance reasons.
-#!do not run multiple instances of the function/call function more than once or you will get an error!!!
-
-shortest_path(graph, source, 'H')
-# shortest_path(graph, source, 'K')
-# shortest_path(graph, source, 'Q')
-# shortest_path(graph, source, 'T')
+shortest_path(graph, source, dest)
