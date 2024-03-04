@@ -1,9 +1,9 @@
-# Kabir Bose: 100862410
+#Kabir Bose: 100862410
 
-import sys
-from heapq import heapify, heappush, heappop
+#used to make an infinite number (sys.maxsize)
+from sys import maxsize
 
-# re-creates the graph from the diagram in python
+#the graph of distances remodelled using a dictionary
 graph = {
     'A': {'B':6, 'F': 5},
     'B': {'A':6, 'C':5, 'G':6},
@@ -30,65 +30,59 @@ graph = {
     'W': {'R':10, 'V':5}
 }
 
-def dijsktra(graph, src, dest):
-    # infinite value to assign as a cost for all nodes as default
-    inf = sys.maxsize
+def shortest_path(graph,start,dest):
+    costs = {} #holds costs of reaching each node in the graph
+    pred = {} #holds predecessor of path that led to that node
+    nodes = graph #to iterate through all nodes (essentially a temp variable)
+    inf = maxsize #infinite number (max size from sys library)
+    trace = [] #traces back all nodes
 
-    # holds all predecessor nodes to get to a dest and the cost of the src node
-    node_data = {
-        'A': {'cost':inf, 'pred':[]},
-        'B': {'cost':inf, 'pred':[]},
-        'C': {'cost':inf, 'pred':[]},
-        'D': {'cost':inf, 'pred':[]},
-        'E': {'cost':inf, 'pred':[]},
-        'F': {'cost':inf, 'pred':[]},
-        'G': {'cost':inf, 'pred':[]},
-        'H': {'cost':inf, 'pred':[]},
-        'I': {'cost':inf, 'pred':[]},
-        'J': {'cost':inf, 'pred':[]},
-        'K': {'cost':inf, 'pred':[]},
-        'L': {'cost':inf, 'pred':[]},
-        'M': {'cost':inf, 'pred':[]},
-        'N': {'cost':inf, 'pred':[]},
-        'O': {'cost':inf, 'pred':[]},
-        'P': {'cost':inf, 'pred':[]},
-        'Q': {'cost':inf, 'pred':[]},
-        'R': {'cost':inf, 'pred':[]},
-        'S': {'cost':inf, 'pred':[]},
-        'T': {'cost':inf, 'pred':[]},
-        'U': {'cost':inf, 'pred':[]},
-        'V': {'cost':inf, 'pred':[]},
-        'W': {'cost':inf, 'pred':[]},
-    }
+    #set the costs as infinity for all nodes
+    for node in nodes:
+        costs[node] = inf
 
-    node_data[src]['cost'] = 0 # assigns the cost of src node to 0
+    #set the cost of the source node to 0
+    costs[start] = 0
 
-    visited = [] # keeps track of all visited nodes
+    #loop through every single node in the graph
+    while nodes:
+        min_distance = None
 
-    temp = src # the neighbor node with the smallest cost for the node that is being visited
+        for node in nodes:
 
-    for i in range(len(graph)-1): # run loop till all nodes are visited
-        if temp not in visited: # check if temp node has been visited
-            visited.append(temp)
+            #find the min_distance every time the graph is iterated
+            if min_distance is None or costs[node] < costs[min_distance]:
+                min_distance = node
 
-            min_heap = []
+        #for the node with the lowest cost find all possible items
+        path_options = graph[min_distance].items()
 
-            for j in graph[temp]: # check if neighbor has a minimum cost
-                if j not in visited: # if neighbor is not visited
-                    cost = node_data[temp]['cost'] + graph[temp][j] #add the cost to that neighbor
-            
-                    if cost < node_data[j]['cost']: # if neighbor costs are less than calculated cost
-                        node_data[j]['cost'] = cost # assign the new costs to neighbors
-                        node_data[j]['pred'] = node_data[temp]['pred'] + list(temp) # assign predecessor if low cost
-                    
-                    heappush(min_heap, (node_data[j]['cost'], j)) # push cost of every neighbor inside min_heap
-        
-        heapify(min_heap)
-        temp = min_heap[0][1]
-    
-    print('Shortest distance: ' + str(node_data[dest]['cost']))
-    print('Shortest path: ' + str(node_data[dest]['pred'] + list(dest)))
-            
-    return 0
+        #continue calculating cost for each path and only update it if it is lower than the existing cost
+        for child_node, weight in path_options:
 
-dijsktra(graph, 'H', 'A')
+            if weight + costs[min_distance] < costs[child_node]:
+                costs[child_node] = weight + costs[min_distance]
+                pred[child_node] = min_distance
+
+        #remove any nodes that have already been visited
+        nodes.pop(min_distance)
+
+    #when the current node is equal to the destination node...
+    currentNode = dest
+
+    #trace back path to source node and calculate total cost
+    while currentNode != start:
+        try:
+            trace.insert(0,currentNode)
+            currentNode = pred[currentNode]
+        except KeyError:
+            print('Path not reachable')
+            break
+    trace.insert(0,start)
+
+    #if the cost is inf, the node had not been reached.
+    if costs[dest] != inf:
+        print('Shortest distance: ' + str(costs[dest]))
+        print('Path to distance: ' + str(trace))
+
+shortest_path(graph, 'A', 'H')
