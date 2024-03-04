@@ -1,4 +1,6 @@
 #Kabir Bose: 100862410
+#Zuhaib Shafi:
+#Matthew Allicock:
 
 #used to make an infinite number (sys.maxsize)
 from sys import maxsize
@@ -12,19 +14,19 @@ graph = {
     'E': {'D':7, 'I':6, 'N':15},
     'F': {'A':5, 'G':8, 'J':7},
     'G': {'B':6, 'F':8, 'H':9, 'K':8},
-    'H': {'C':5, 'G':9, 'I':12},
+    'H': {'C':5, 'G':9, 'I':12}, #charger
     'I': {'D':8, 'E':6, 'H':12, 'M':10},
     'J': {'F':7, 'K':5, 'O':7},
-    'K': {'G':8, 'J':5, 'L':7},
+    'K': {'G':8, 'J':5, 'L':7}, #charger
     'L': {'K':7, 'M':7},
     'M': {'I':10, 'L':7, 'N':9},
     'N': {'E':15, 'M':9, 'R':7},
     'O': {'J':7, 'P':13, 'S':9},
     'P': {'L':7, 'O':13, 'Q':8, 'U':11},
-    'Q': {'P':8, 'R':9},
+    'Q': {'P':8, 'R':9}, #charger
     'R': {'N':7, 'Q':9, 'W':10},
     'S': {'O':9, 'T':9},
-    'T': {'S':9, 'U':8},
+    'T': {'S':9, 'U':8}, #charger
     'U': {'P':11, 'T':8, 'V':8},
     'V': {'U':8, 'W':5},
     'W': {'R':10, 'V':5}
@@ -85,10 +87,13 @@ def shortest_path(graph,start,dest):
         print('Shortest distance: ' + str(costs[dest]))
         print('Path to distance: ' + str(trace))
 
+#starting value
 source = 'A'
 
-#! Function can only be called once
-# shortest_path(graph, source, 'H')
-shortest_path(graph, source, 'K')
+#!function can only be called once for performance reasons.
+#!do not run multiple instances of the function/call function more than once or you will get an error!!!
+
+shortest_path(graph, source, 'H')
+# shortest_path(graph, source, 'K')
 # shortest_path(graph, source, 'Q')
 # shortest_path(graph, source, 'T')
