@@ -2,8 +2,8 @@
 #Zuhaib Shafi:
 #Matthew Allicock:
 
-#used to make an infinite number (sys.maxsize)
-from sys import maxsize
+# the source node that the user will choose
+src = input("Enter a source node from A to W (eg. S): ").capitalize()
 
 #the graph of distances remodelled using a dictionary
 graph = {
@@ -32,65 +32,80 @@ graph = {
     'W': {'R':10, 'V':5}
 }
 
-def shortest_path(graph,start,dest):
-    costs = {} #holds costs of reaching each node in the graph
-    pred = {} #holds predecessor of path that led to that node
-    nodes = graph #to iterate through all nodes (essentially a temp variable)
-    inf = maxsize #infinite number (max size from sys library)
-    trace = [] #traces back all nodes
+def shortest_path(graph, src, dest):
+    # initialize distances as infinity, except for the source node set to 0
+    distances = {node: 999999999 for node in graph}
+    distances[src] = 0
 
-    #set the costs as infinity for all nodes
-    for node in nodes:
-        costs[node] = inf
+    # keep track of the predecessors of each node to reconstruct the path
+    predecessors = {node: None for node in graph}
 
-    #set the cost of the source node to 0
-    costs[start] = 0
+    # keep track of visited nodes to avoid revisiting them
+    visited = set()
 
-    #loop through every single node in the graph
-    while nodes:
-        min_distance = None
+    # while there are nodes yet to be visited
+    while visited != set(graph.keys()):
+        # select the unvisited node with the smallest distance
+        current_node = None
+        for node in graph:
+            if node not in visited:
+                if current_node is None:
+                    current_node = node
+                elif distances[node] < distances[current_node]:
+                    current_node = node
 
-        for node in nodes:
+        # visit the selected node
+        visited.add(current_node)
 
-            #find the min_distance every time the graph is iterated
-            if min_distance is None or costs[node] < costs[min_distance]:
-                min_distance = node
+        # for each neighbor of the current node
+        for neighbor, cost in graph[current_node].items():
+            # calculate the new distance to the neighbor
+            new_distance = distances[current_node] + cost
 
-        #for the node with the lowest cost find all possible items
-        path_options = graph[min_distance].items()
+            # if the new distance is smaller, update the shortest distance and predecessor for this neighbor
+            if new_distance < distances[neighbor]:
+                distances[neighbor] = new_distance
+                predecessors[neighbor] = current_node
 
-        #continue calculating cost for each path and only update it if it is lower than the existing cost
-        for child_node, weight in path_options:
-
-            if weight + costs[min_distance] < costs[child_node]:
-                costs[child_node] = weight + costs[min_distance]
-                pred[child_node] = min_distance
-
-        #remove any nodes that have already been visited
-        nodes.pop(min_distance)
-
-    #when the current node is equal to the destination node...
-    currentNode = dest
-
-    #trace back path to source node and calculate total cost
-    while currentNode != start:
-        try:
-            trace.insert(0,currentNode)
-            currentNode = pred[currentNode]
-        except KeyError:
-            print('Path not reachable')
+        # if we've reached the destination, no need to continue
+        if current_node == dest:
             break
-    trace.insert(0,start)
 
-    #if the cost is inf, the node had not been reached.
-    if costs[dest] != inf:
-        print('Shortest distance: ' + str(costs[dest]))
-        print('Path to distance: ' + str(trace))
+    # reconstruct the shortest path from source to destination
+    path = []
+    current_node = dest
+    while current_node is not None:
+        path.append(current_node)
+        current_node = predecessors[current_node]
+    path.reverse()
 
+    # return the shortest path and its cost
+    return path, distances[dest]
 
-#!do not run multiple instances of the function/call function more than once or you will get an error!!!
-#starting value
-source = 'A'
-dest = 'H'
+def outputs():
+    # all the paths and costs to each charger
+    path1, cost1 = shortest_path(graph, src, 'H')
+    path2, cost2 = shortest_path(graph, src, 'K')
+    path3, cost3 = shortest_path(graph, src, 'Q')
+    path4, cost4 = shortest_path(graph, src, 'T')
 
-shortest_path(graph, source, dest)
+    paths_costs = {'H': cost1,'K': cost2,'Q': cost3,'T': cost4}
+
+    def sort_dict_by_values(d):
+        # sort the dictionary by its values
+        sorted_dict = sorted(d.items(), key=lambda item: item[1])
+    
+        #get the smallest key based on the smallest value
+        smallest_key = sorted_dict[0][0]
+    
+        # print the smallest key
+        return smallest_key
+
+    print(f"Path to H: {path1} with cost of {cost1}")
+    print(f"Path to K: {path2} with cost of {cost2}")
+    print(f"Path to Q: {path3} with cost of {cost3}")
+    print(f"Path to T: {path4} with cost of {cost4}")
+
+    print(f"\nThe closest charger is {sort_dict_by_values(paths_costs)}")
+
+outputs()
